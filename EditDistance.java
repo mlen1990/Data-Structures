@@ -30,9 +30,9 @@ public class EditDistance {
   }
 
   /*
-   *  To compile this program using the command line type
+   *  To compile this program using the command line, type
    *  "javac EditDistance.java"
-   *  To run this program using the command line type
+   *  To run this program using the command line, type
    *  "java EditDistance <String1> <String2>
    *  On a successful run, the edit distance between String1 and String2
    *  is outputted to stdout.
