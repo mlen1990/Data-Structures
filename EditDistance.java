@@ -3,10 +3,13 @@
 public class EditDistance {
 
   /*
+   *  To call this method in another method use "EditDistance.dist(s1, s2)"
    *  Compute the edit distance of two strings using dynamic programming.
    *  @param s1 the first string.
    *  @param s2 the second string.
    *  @return an integer representing the edit distance between s1 and s2.
+   *  Running time: O(nm), where n is the size of s1 and m is the size of
+   *  s2.
    */
   public static int dist(String s1, String s2) {
     int[][] d = new int[s1.length() + 1][s2.length() + 1];

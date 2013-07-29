@@ -3,6 +3,8 @@
 public class IterativeFibonacci {
 
   /*
+   *  To call this method in another method use
+   *  "IterativeFibonacci.fibonacci(n)"
    *  This function computes the nth fibonacci number iteratively.
    *  @param n the nth fibonacci number to be computed.
    *  @return an integer representing the nth fibonacci number.

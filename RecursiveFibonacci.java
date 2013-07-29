@@ -3,6 +3,8 @@
 public class RecursiveFibonacci {
 
   /*
+   *  To call this method in another method use
+   *  "RecursiveFibonacci.fibonacci(n)"
    *  This function computes the nth Fibonacci number recursively.
    *  @param n the nth fibonacci number to be computed.
    *  @return an integer representing the nth fibonacci number.
