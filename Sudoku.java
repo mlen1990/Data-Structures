@@ -25,13 +25,6 @@ public class Sudoku {
         return false;
       }
     }
-    for (int l = 0; l < 9; l++) {
-      for (int m = 0; m < 9; m++) {
-        System.out.print(grid[m][l]);
-        System.out.print("  ");
-      }
-      System.out.println();
-    }
 
     HashSet<Integer> digits; // an empty set that will soon contain the integers 1-9
 
@@ -68,7 +61,6 @@ public class Sudoku {
             // if we fail to add a digit to the set that means it is already in the set
             // so return false
             if (!digits.add(new Integer(grid[l][m]))) { // add the digit to the set
-    System.out.println("false");
               return false;
             }
           }
