@@ -10,6 +10,9 @@ public class Sudoku {
    *  @param return true if sudoku is valid else return false
    */
   public static boolean isValid(String sudoku) {
+    if (sudoku == null) {
+      return false;
+    }
     if (sudoku.length() != 81) {
       return false;
     }
@@ -19,7 +22,7 @@ public class Sudoku {
     int j = 0;
     for (int i = 0; i < sudoku.length(); i++) {
       j = i / 9; // use the index to determine which row we are currently in
-      if (Character.isDigit(sudoku.charAt(i))) {
+      if (Character.isDigit(sudoku.charAt(i)) && sudoku.charAt(i) != '0') {
         grid[i % 9][j] = Character.getNumericValue(sudoku.charAt(i));
       } else {
         return false;
