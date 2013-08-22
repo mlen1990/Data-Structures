@@ -4,4 +4,4 @@
 *~
 *.class
 *Test.java
-.DC_Store
+*.DS_Store
