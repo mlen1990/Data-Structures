@@ -18,6 +18,8 @@ public class DirectoryTraversal {
   private MySQLDatabase mysql;
   private Runnable run;
   private int exited = 0;
+  private final static Object filesLock = new Object();
+  private final static Object countsLock = new Object();
 
   /**
    *  DirectoryTraversal() constructor.
@@ -53,42 +55,39 @@ public class DirectoryTraversal {
       public void run() {
         try {
           System.out.println("Thread " + Thread.currentThread().getId() + " Started and running");
-          while (files.size() != 0) {
-            if ((System.currentTimeMillis() - startTime) < executionTime) {
-              File file = null;
-              synchronized(files) {
-                if (files.size() == 0) {
-                  break;
+          while ((System.currentTimeMillis() - startTime) < executionTime) {
+            File file = null;
+            synchronized(filesLock) {
+              if (files.size() == 0) {
+                break;
+              } else {
+                file = files.remove(0);
+              }
+            }
+            if (file.isDirectory()) {
+              String[] filenames = file.list();
+              for (String filename : filenames) {
+                files.add(new File(file, filename));
+              }
+            } else if (file.isFile()) {
+              String[] path = file.toString().split("/");
+              String key = path[path.length - 1];
+              String sql = "INSERT INTO FILES values(now(), \"" + key + "\", \"" + path[1] + "\", " + Thread.currentThread().getId() + ")";
+              //System.out.println(sql);
+              mysql.addEntry(sql);
+              synchronized(countsLock) {
+                if (counts.containsKey(key)) {
+                  int count = counts.get(key);
+                  count++;
+                  counts.put(key, count);
                 } else {
-                  file = files.remove(0);
+                  counts.put(key, 1);
                 }
               }
-              if (file.isDirectory()) {
-                String[] filenames = file.list();
-                for (String filename : filenames) {
-                  files.add(new File(file, filename));
-                }
-              } else if (file.isFile()) {
-                String[] path = file.toString().split("/");
-                String key = path[path.length - 1];
-                String sql = "INSERT INTO FILES values(now(), \"" + key + "\", \"" + path[1] + "\", " + Thread.currentThread().getId() + ")";
-                System.out.println(sql);
-                mysql.addEntry(sql);
-                synchronized(counts) {
-                  if (counts.containsKey(key)) {
-                    int count = counts.get(key);
-                    count++;
-                    counts.put(key, count);
-                  } else {
-                    counts.put(key, 1);
-                  }
-                }
-              }
-            } else {
-              break;
             }
           }
         } catch (Exception e) {
+          System.out.println("Line 88: " + e.toString());
         } finally {
           exited++;
           System.out.println("Thread " + Thread.currentThread().getId() + " Finished");
