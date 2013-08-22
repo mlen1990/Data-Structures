@@ -16,13 +16,18 @@ public class DirectoryTraversal {
   private ArrayList<File> files;
   private Runnable run;
   private int exited = 0;
+  private long startTime;
+  private long executionTime;
 
   /**
    *  DirectoryTraversal() constructor.
    *  @param filepath the file to be traversed.
    *  @param numThreads the number of threads to be used.
+   *  @param executionTime the execution time
    **/
-  public DirectoryTraversal(String filepath, String numThreads) {
+  public DirectoryTraversal(String filepath, String numThreads, String executionTime) {
+    startTime = System.currentTimeMillis();
+    this.executionTime = Long.parseLong(executionTime);
     counts = new HashMap<String, Integer>();
     mysql = new MySQLDatabase();
     mysql.connectToDatabase();
@@ -36,38 +41,47 @@ public class DirectoryTraversal {
     threadpool = new Thread[this.numThreads];
     files = new ArrayList<File>();
     files.add(new File(filepath));
+    setupRunnable();
+  }
+
+  private void setupRunnable() {
     run = new Runnable() {
       public void run() {
         try {
           System.out.println("Thread " + Thread.currentThread().getId() + " Started and running");
           while (files.size() != 0) {
-            File file = null;
-            synchronized(files) {
-              if (files.size() == 0) {
-                break;
-              } else {
-                file = files.remove(0);
-              }
-            }
-            if (file.isDirectory()) {
-              String[] filenames = file.list();
-              for (String filename : filenames) {
-                files.add(new File(file, filename));
-              }
-            } else if (file.isFile()) {
-              String[] path = file.toString().split("/");
-              String key = path[path.length - 1];
-              String sql = "INSERT INTO FILES values(now(), \"" + key + "\", \"" + path[1] + "\", " + Thread.currentThread().getId() + ")";
-              mysql.addEntry(sql);
-              synchronized(counts) {
-                if (counts.containsKey(key)) {
-                  int count = counts.get(key);
-                  count++;
-                  counts.put(key, count);
+            if ((System.currentTimeMillis() - startTime) < executionTime) {
+              File file = null;
+              synchronized(files) {
+                if (files.size() == 0) {
+                  break;
                 } else {
-                  counts.put(key, 1);
+                  file = files.remove(0);
                 }
               }
+              if (file.isDirectory()) {
+                String[] filenames = file.list();
+                for (String filename : filenames) {
+                  files.add(new File(file, filename));
+                }
+              } else if (file.isFile()) {
+                String[] path = file.toString().split("/");
+                String key = path[path.length - 1];
+                String sql = "INSERT INTO FILES values(now(), \"" + key + "\", \"" + path[1] + "\", " + Thread.currentThread().getId() + ")";
+                System.out.println(sql);
+                mysql.addEntry(sql);
+                synchronized(counts) {
+                  if (counts.containsKey(key)) {
+                    int count = counts.get(key);
+                    count++;
+                    counts.put(key, count);
+                  } else {
+                    counts.put(key, 1);
+                  }
+                }
+              }
+            } else {
+              break;
             }
           }
         } catch (Exception e) {
@@ -110,6 +124,7 @@ public class DirectoryTraversal {
       }
       output.flush();
       output.close();
+      System.out.println("Successfully Wrote Filename Counts to output.txt");
     } catch (Exception e) {
       System.out.println(e);
     }
@@ -145,7 +160,7 @@ public class DirectoryTraversal {
       return;
     }
     System.out.println("Begin Traversing Directory: " + args[0] + " using " + args[1] + " threads");
-    DirectoryTraversal d = new DirectoryTraversal(args[0], args[1]);
+    DirectoryTraversal d = new DirectoryTraversal(args[0], args[1], args[2]);
     d.traverse();
     d.closeConnection();
     System.out.println("Finished Traversing Directory: " + args[0]);
