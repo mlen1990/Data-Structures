@@ -1,0 +1,4 @@
+.DS_Store - 20
+john - 6
+mark - 6
+sally - 5
