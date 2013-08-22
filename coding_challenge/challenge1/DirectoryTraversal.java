@@ -7,17 +7,17 @@ import java.io.PrintWriter;
 
 public class DirectoryTraversal {
 
-  private int numThreads;
   private int defaultNumThreads = 5;
 
-  private MySQLDatabase mysql;
-  private HashMap<String, Integer> counts;
-  private Thread[] threadpool;
   private ArrayList<File> files;
+  private int numThreads;
+  private Thread[] threadpool;
+  private long executionTime;
+  private long startTime;
+  private HashMap<String, Integer> counts;
+  private MySQLDatabase mysql;
   private Runnable run;
   private int exited = 0;
-  private long startTime;
-  private long executionTime;
 
   /**
    *  DirectoryTraversal() constructor.
@@ -26,22 +26,26 @@ public class DirectoryTraversal {
    *  @param executionTime the execution time
    **/
   public DirectoryTraversal(String filepath, String numThreads, String executionTime) {
-    startTime = System.currentTimeMillis();
-    this.executionTime = Long.parseLong(executionTime);
-    counts = new HashMap<String, Integer>();
-    mysql = new MySQLDatabase();
-    mysql.connectToDatabase();
-    mysql.setup();
+    files = new ArrayList<File>();
+    files.add(new File(filepath));
     this.numThreads = Integer.parseInt(numThreads);
+    threadpool = new Thread[this.numThreads];
     if (this.numThreads <= 0) {
       System.out.println("Error: Invalid Number of Threads");
       System.out.println("Using 5 Threads Instead");
       this.numThreads = defaultNumThreads;
     }
-    threadpool = new Thread[this.numThreads];
-    files = new ArrayList<File>();
-    files.add(new File(filepath));
+    this.executionTime = Long.parseLong(executionTime);
+    startTime = System.currentTimeMillis();
+    counts = new HashMap<String, Integer>();
+    setupDatabase();
     setupRunnable();
+  }
+
+  private void setupDatabase() {
+    mysql = new MySQLDatabase();
+    mysql.connectToDatabase();
+    mysql.setup();
   }
 
   private void setupRunnable() {
