@@ -47,6 +47,7 @@ public class BinarySearchTree extends Tree {
           if (((Comparable) item).compareTo((Comparable) node.item()) < 0) {
             if (node.leftChild == null) {
               node.leftChild = new BinarySearchTreeNode(item, this);
+              node.leftChild.parent = node;
               size++;
               return true;
             } else {
@@ -57,6 +58,7 @@ public class BinarySearchTree extends Tree {
           } else {
             if (node.rightChild == null) {
               node.rightChild = new BinarySearchTreeNode(item, this);
+              node.rightChild.parent = node;
               size++;
               return true;
             } else {
@@ -140,6 +142,33 @@ public class BinarySearchTree extends Tree {
         } catch (InvalidNodeException e) {
           return null;
         }
+        node = node.rightChild;
+        if (!nodes.isEmpty() || node != null) {
+          inorder.append(',');
+        }
+      }
+    }
+    return inorder.append(']').toString();
+  }
+
+  /**
+   *  toString() returns a String represenation of this
+   *  BinarySearchTree.
+   *
+   *  @return a String representation of this BinarySearchTree.
+   **/
+  public String toString() {
+    LinkedList<BinarySearchTreeNode> nodes = new LinkedList<BinarySearchTreeNode>();
+    BinarySearchTreeNode node = root;
+    StringWriter inorder = new StringWriter();
+    inorder.append('[');
+    while (!nodes.isEmpty() || node != null) {
+      if (node != null) {
+        nodes.add(node);
+        node = node.leftChild;
+      } else {
+        node = nodes.removeLast();
+        inorder.append(node.toString());
         node = node.rightChild;
         if (!nodes.isEmpty() || node != null) {
           inorder.append(',');

@@ -66,4 +66,11 @@ public abstract class Tree {
    *  @return true if the item is in this tree, false otherwise.
    **/
   public abstract boolean contains(Object item);
+
+  /**
+   *  toString() returns a String representation of this Tree.
+   *
+   *  @return a String representation of this Tree.
+   **/
+  public abstract String toString();
 }

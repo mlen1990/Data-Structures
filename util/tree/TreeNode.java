@@ -44,6 +44,11 @@ public abstract class TreeNode {
     return item;
   }
 
-
+  /**
+   *  toString() returns a String representation of this TreeNode.
+   *
+   *  @return a String representation of this TreeNode.
+   */
+  public abstract String toString();
 
 }

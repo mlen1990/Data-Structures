@@ -77,13 +77,40 @@ public class BinarySearchTreeTest {
     assertTrue(tree.insert(new Integer(88)));
     assertTrue(tree.contains(new Integer(88)));
     assertTrue("[0,10,12,25,33,50,60,75,88]".equals(tree.inOrder()));
-    System.out.println("Passed!");
+    System.out.println("PASSED!");
+  }
+
+  @Test
+  public static void test3() {
+    System.out.print("Test 3 - ");
+    BinarySearchTree tree = new BinarySearchTree();
+    assertTrue(tree.size() == 0);
+    assertTrue("[]".equals(tree.toString()));
+    assertTrue(tree.insert(new Integer(50)));
+    assertTrue(tree.size() == 1);
+    assertTrue("[[Parent: null, Item: 50]]".equals(tree.toString()));
+    assertTrue(tree.insert(new Integer(60)));
+    assertTrue(tree.size() == 2);
+    assertTrue("[[Parent: null, Item: 50],[Parent: 50, Item: 60]]".equals(tree.toString()));
+    assertTrue(tree.insert(new Integer(70)));
+    assertTrue(tree.size() == 3);
+    assertTrue("[[Parent: null, Item: 50],[Parent: 50, Item: 60],[Parent: 60, Item: 70]]".equals(tree.toString()));
+    assertTrue(tree.insert(new Integer(40)));
+    assertTrue(tree.size() == 4);
+    assertTrue("[[Parent: 50, Item: 40],[Parent: null, Item: 50],[Parent: 50, Item: 60],[Parent: 60, Item: 70]]".equals(tree.toString()));
+    assertTrue(tree.insert(new Integer(45)));
+    assertTrue(tree.size() == 5);
+    assertTrue(tree.insert(new Integer(55)));
+    assertTrue(tree.size() == 6);
+    assertTrue("[[Parent: 50, Item: 40],[Parent: 40, Item: 45],[Parent: null, Item: 50],[Parent: 60, Item: 55],[Parent: 50, Item: 60],[Parent: 60, Item: 70]]".equals(tree.toString()));
+    System.out.println("PASSED!");
   }
 
   public static void main(String[] args) {
     System.out.println("Begin BinarySearchTree Testing:");
     test1();
     test2();
+    test3();
     System.out.println("All Tests Passed!!");
   }
 }

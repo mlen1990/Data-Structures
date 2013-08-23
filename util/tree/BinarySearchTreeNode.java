@@ -30,4 +30,21 @@ public class BinarySearchTreeNode extends TreeNode {
     this.item = item;
     this.myTree = tree;
   }
+
+  /**
+   *  toString() returns a String representation of this
+   *  BinarySearchTreeNode.
+   *
+   *  @return a String representation of this BinarySearchTreeNode.
+   **/
+  public String toString() {
+    String ret = "[Parent: ";
+    if (parent != null) {
+      ret += parent.item;
+    } else {
+      ret += "null";
+    }
+    ret += ", Item: " + item;
+    return ret + "]";
+  }
 }
