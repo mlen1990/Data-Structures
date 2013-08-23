@@ -14,10 +14,12 @@ public class DirectoryTraversal {
   private int numThreads;
   private long executionTime;
   private long startTime;
-  private HashMap<String, Integer> counts;
+  private HashMap<String, Integer> counts; // Needs to be synchronized
   private MySQLDatabase mysql;
   private Runnable run;
-  private int exited = 0;
+  private int exited = 0; // Needs to be synchronized?
+
+  // Locks
   private final static Object filesLock = new Object();
   private final static Object countsLock = new Object();
   private final static Object exitedLock = new Object();
@@ -43,10 +45,10 @@ public class DirectoryTraversal {
       System.out.println("Using " + defaultExecutionTime + " ms Instead");
       this.executionTime = defaultExecutionTime;
     }
-    startTime = System.currentTimeMillis();
     counts = new HashMap<String, Integer>();
     setupDatabase();
     setupRunnable();
+    startTime = System.currentTimeMillis();
   }
 
   private void setupDatabase() {
@@ -58,7 +60,7 @@ public class DirectoryTraversal {
   private void setupRunnable() {
     run = new Runnable() {
       public void run() {
-        System.out.println("Thread " + Thread.currentThread().getId() + " Started and running");
+        //System.out.println("Thread " + Thread.currentThread().getId() + " Started and running");
         while ((System.currentTimeMillis() - startTime) < executionTime) {
           try {
             File file = null;
@@ -70,14 +72,15 @@ public class DirectoryTraversal {
             if (file == null) {
             } else if (file.isDirectory()) {
               String[] filenames = file.list();
-              for (String filename : filenames) {
-                files.add(new File(file, filename));
+              synchronized(filesLock) {
+                for (String filename : filenames) {
+                  files.add(new File(file, filename));
+                }
               }
             } else if (file.isFile()) {
               String[] path = file.toString().split("/");
               String key = path[path.length - 1];
               String sql = "INSERT INTO FILES values(now(), \"" + key + "\", \"" + path[1] + "\", " + Thread.currentThread().getId() + ")";
-              //System.out.println(sql);
               mysql.addEntry(sql);
               synchronized(countsLock) {
                 if (counts.containsKey(key)) {
@@ -90,8 +93,7 @@ public class DirectoryTraversal {
               }
             }
           } catch (Exception e) {
-            System.out.println("Line 88: " + e.toString());
-          } finally {
+            System.out.println(e);
           }
         }
         synchronized(exitedLock) {
@@ -156,7 +158,6 @@ public class DirectoryTraversal {
         System.out.println(e);
       }
     }
-    System.out.println(files.size());
     printCounts();
     writeCounts();
   }
