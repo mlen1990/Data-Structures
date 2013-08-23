@@ -57,8 +57,6 @@ public class MySQLDatabase {
     Statement stmt = null;
     try {
       stmt = mysql.createStatement();
-      String sql1 = "DROP DATABASE FILES";
-      stmt.executeUpdate(sql1);
       String sql = "CREATE DATABASE FILES";
       stmt.executeUpdate(sql);
       sql = "USE FILES";

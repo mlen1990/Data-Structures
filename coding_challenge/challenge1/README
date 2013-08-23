@@ -1,0 +1,30 @@
+Author: Martin Len
+The operating system that this program was developed on is MAC OS X
+Version 10.7.5
+
+Instructions:
+1. Setup the JDBC driver. This program will not work without it.
+2. Install MySQL.
+3. Open up MySQLDatabase.java and change the user name and password to the
+one set on MySQL.
+4. At the command line, compile the program using "javac *.java"
+5. At the command line, run the program using
+"java DirectoryTraversal <directory> <numThreads> <executionTime>"
+
+Note:
+1. This program intentionally ignores the directory that is passed in
+as an input argument when storing files in the database i.e. only the
+subdirectories in the input directory will be considered as the top level.
+2. If numThreads is less than or equal to 0, an error will be printed.
+The program will continue executing using a default of 5 threads.
+3. The executionTime is in milliseconds.
+4. If executionTime is less than or equal to 0, an error will be
+printed. The program will continue executing using a default of 1000 ms.
+5. This program assumes that a database table "files" does not already
+exist in the set of mysql tables and creates the database table files.
+
+How to install JDBC driver using the command line:
+1. Get the full path to the folder "mysql-connector-java-5.1.26".
+2. Type "export MYSQL_HOME="path/mysql-connector-java-5.1.26"
+3. Type "export CLASSPATH="$CLASSPATH:$MYSQL_HOME/mysql-connector-java-5.1.26-bin.jar:."
+
