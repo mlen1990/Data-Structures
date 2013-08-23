@@ -2,6 +2,8 @@
 
 package tree;
 
+import java.util.LinkedList;
+
 /**
  *  A BinarySearchTree is a binary search tree, where each node has a
  *  left and right child. This ADT does not allow duplicate items.
@@ -33,7 +35,38 @@ public class BinarySearchTree extends Tree {
    *  otherwise.
    **/
   public boolean insert(Object item) {
-    return false;
+    if (root == null) {
+      root = new BinarySearchTreeNode(item, this);
+      size++;
+      return true;
+    } else {
+      BinarySearchTreeNode node = root;
+      while (true) {
+        try {
+          if (((Comparable) item).compareTo((Comparable) node.item()) < 0) {
+            if (node.leftChild == null) {
+              node.leftChild = new BinarySearchTreeNode(item, this);
+              size++;
+              return true;
+            } else {
+              node = node.leftChild;
+            }
+          } else if (((Comparable) item).compareTo((Comparable) node.item()) == 0) {
+            return false;
+          } else {
+            if (node.rightChild == null) {
+              node.rightChild = new BinarySearchTreeNode(item, this);
+              size++;
+              return true;
+            } else {
+              node = node.rightChild;
+            }
+          }
+        } catch (InvalidNodeException e) {
+          return false;
+        }
+      }
+    }
   }
 
   /**
@@ -56,5 +89,36 @@ public class BinarySearchTree extends Tree {
    **/
   public boolean contains(Object item) {
     return false;
+  }
+
+  /**
+   *  inOrder() iteratively perform an inorder traversal of this tree.
+   *
+   *  @return a string representing an inorder traversal of this tree.
+   *
+   *  Performance: O(n)
+   **/
+  public String inOrder() {
+    LinkedList<BinarySearchTreeNode> nodes = new LinkedList<BinarySearchTreeNode>();
+    BinarySearchTreeNode node = root;
+    String inorder = "[";
+    while (!nodes.isEmpty() || node != null) {
+      if (node != null) {
+        nodes.add(node);
+        node = node.leftChild;
+      } else {
+        node = nodes.removeLast();
+        try {
+          inorder += node.item().toString();
+        } catch (InvalidNodeException e) {
+          return null;
+        }
+        node = node.rightChild;
+        if (!nodes.isEmpty() || node != null) {
+          inorder += ",";
+        }
+      }
+    }
+    return inorder + "]";
   }
 }
