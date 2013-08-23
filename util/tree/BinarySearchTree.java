@@ -26,6 +26,55 @@ public class BinarySearchTree extends Tree {
     this.size = 0;
   }
 
+  public BinarySearchTree(Object[] inOrder, Object[] preOrder) {
+    root = buildTree(inOrder, preOrder, 0, inOrder.length - 1);
+  }
+
+  /**
+   *  find() is a helper method that finds the index of an Object in an
+   *  inorder traversal of a binary search tree.
+   *
+   *  @param inOrder the inOrder traversal of a binary search tree.
+   *  @param item the object to be located.
+   *
+   *  @return the index of the Object in the inOrder array, return -1 if
+   *  the item is not found.
+   **/
+  private static int find(Object[] inOrder, Object item) {
+    for (int i = 0; i < inOrder.length; i++) {
+      if (inOrder[i].equals(item)) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  public BinarySearchTreeNode buildTree(Object[] inOrder, Object[] preOrder, int start, int end) {
+    if (start > end) {
+      return null;
+    }
+    // Make sure both traversals have the same number of nodes.
+    if (inOrder.length != preOrder.length) {
+      return null;
+    }
+    // There is no point in continuing if there are no Objects.
+    if (inOrder.length == 0) {
+      return null;
+    } else if (inOrder.length == 1) {
+      return new BinarySearchTreeNode(inOrder[0], this);
+    } else {
+      BinarySearchTreeNode node = new BinarySearchTreeNode(preOrder[size], this);
+      size++;
+      if (start == end) {
+        return node;
+      }
+      int i = find(inOrder, node); // find the index of the root in the inOrder array
+      node.leftChild = buildTree(inOrder, preOrder, start, i - 1);
+      node.rightChild = buildTree(inOrder, preOrder, i + 1, end);
+      return node;
+    }
+  }
+
   /**
    *  insert() inserts an item into this tree at the appropriate
    *  location.
