@@ -3,6 +3,7 @@
 package tree;
 
 import java.util.LinkedList;
+import java.io.StringWriter;
 
 /**
  *  A BinarySearchTree is a binary search tree, where each node has a
@@ -88,7 +89,32 @@ public class BinarySearchTree extends Tree {
    *  @return true if the item is in this tree, false otherwise.
    **/
   public boolean contains(Object item) {
-    return false;
+    if (root == null) {
+      return false;
+    } else {
+      BinarySearchTreeNode node = root;
+      while (true) {
+        try {
+          if (((Comparable) item).compareTo((Comparable) node.item()) < 0) {
+            if (node.leftChild == null) {
+              return false;
+            } else {
+              node = node.leftChild;
+            }
+          } else if (((Comparable) item).compareTo((Comparable) node.item()) == 0) {
+            return true;
+          } else {
+            if (node.rightChild == null) {
+              return false;
+            } else {
+              node = node.rightChild;
+            }
+          }
+        } catch (InvalidNodeException e) {
+          return false;
+        }
+      }
+    }
   }
 
   /**
@@ -101,7 +127,8 @@ public class BinarySearchTree extends Tree {
   public String inOrder() {
     LinkedList<BinarySearchTreeNode> nodes = new LinkedList<BinarySearchTreeNode>();
     BinarySearchTreeNode node = root;
-    String inorder = "[";
+    StringWriter inorder = new StringWriter();
+    inorder.append('[');
     while (!nodes.isEmpty() || node != null) {
       if (node != null) {
         nodes.add(node);
@@ -109,16 +136,16 @@ public class BinarySearchTree extends Tree {
       } else {
         node = nodes.removeLast();
         try {
-          inorder += node.item().toString();
+          inorder.append(node.item().toString());
         } catch (InvalidNodeException e) {
           return null;
         }
         node = node.rightChild;
         if (!nodes.isEmpty() || node != null) {
-          inorder += ",";
+          inorder.append(',');
         }
       }
     }
-    return inorder + "]";
+    return inorder.append(']').toString();
   }
 }
