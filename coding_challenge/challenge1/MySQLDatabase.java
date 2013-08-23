@@ -2,6 +2,10 @@
 
 import java.sql.*;
 
+/**
+ *  This class is intended to setup the connection to the MySQL database
+ *  and enable the insertion of file entries.
+ **/
 public class MySQLDatabase {
 
   // Driver and URL
@@ -49,7 +53,6 @@ public class MySQLDatabase {
   /**
    *  setup() sets up the database table files and creates a files table to
    *  store the entries.
-   *  @param mysql the connection to the mysql database.
    *
    *  Note: only use this method if the database hasn't already been set up.
    **/

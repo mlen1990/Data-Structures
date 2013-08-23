@@ -7,17 +7,18 @@ import java.io.PrintWriter;
 
 public class DirectoryTraversal {
 
+  // Use these default values if bad inputs are supplied.
   private int defaultNumThreads = 5;
   private int defaultExecutionTime = 1000;
 
-  private ArrayList<File> files; // Needs to be synchronized
-  private int numThreads;
-  private long executionTime;
-  private long startTime;
-  private HashMap<String, Integer> counts; // Needs to be synchronized
+  private ArrayList<File> files; // Synchronized using the Object filesLock
+  private int numThreads; // The number of threads to be used.
+  private long executionTime; // The program execution time.
+  private long startTime; // The time the program started.
+  private HashMap<String, Integer> counts; // Synchronized using the Object countsLock
   private MySQLDatabase mysql;
   private Runnable run;
-  private int exited = 0; // Needs to be synchronized?
+  private int exited = 0; // Synchronized using the Object exitedLock
 
   // Locks
   private final static Object filesLock = new Object();
@@ -51,16 +52,22 @@ public class DirectoryTraversal {
     startTime = System.currentTimeMillis();
   }
 
+  /**
+   *  setupDatabase() set up the mysql database.
+   **/
   private void setupDatabase() {
     mysql = new MySQLDatabase();
     mysql.connectToDatabase();
     mysql.setup();
   }
 
+  /**
+   *  setupRunnable() set up the runnable object that will be used by all
+   *  threads.
+   **/
   private void setupRunnable() {
     run = new Runnable() {
       public void run() {
-        //System.out.println("Thread " + Thread.currentThread().getId() + " Started and running");
         while ((System.currentTimeMillis() - startTime) < executionTime) {
           try {
             File file = null;
@@ -123,7 +130,7 @@ public class DirectoryTraversal {
   }
 
   /**
-   *  writeCounts() write to a file output.txt the counts of all the files
+   *  writeCounts() write to a file counts.txt the counts of all the files
    *  in the format: filename - count.
    **/
   public void writeCounts() {
@@ -135,7 +142,7 @@ public class DirectoryTraversal {
       }
       output.flush();
       output.close();
-      System.out.println("Successfully Wrote Filename Counts to output.txt");
+      System.out.println("Successfully Wrote Filename Counts to counts.txt");
     } catch (Exception e) {
       System.out.println(e);
     }
