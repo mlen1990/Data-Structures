@@ -8,10 +8,10 @@ import java.io.PrintWriter;
 public class DirectoryTraversal {
 
   private int defaultNumThreads = 5;
+  private int defaultExecutionTime = 1000;
 
-  private ArrayList<File> files;
+  private ArrayList<File> files; // Needs to be synchronized
   private int numThreads;
-  private Thread[] threadpool;
   private long executionTime;
   private long startTime;
   private HashMap<String, Integer> counts;
@@ -20,6 +20,7 @@ public class DirectoryTraversal {
   private int exited = 0;
   private final static Object filesLock = new Object();
   private final static Object countsLock = new Object();
+  private final static Object exitedLock = new Object();
 
   /**
    *  DirectoryTraversal() constructor.
@@ -31,13 +32,17 @@ public class DirectoryTraversal {
     files = new ArrayList<File>();
     files.add(new File(filepath));
     this.numThreads = Integer.parseInt(numThreads);
-    threadpool = new Thread[this.numThreads];
     if (this.numThreads <= 0) {
       System.out.println("Error: Invalid Number of Threads");
-      System.out.println("Using 5 Threads Instead");
+      System.out.println("Using " + defaultNumThreads + " Threads Instead");
       this.numThreads = defaultNumThreads;
     }
     this.executionTime = Long.parseLong(executionTime);
+    if (this.executionTime <= 0) {
+      System.out.println("Error: Invalid Program Execution Time");
+      System.out.println("Using " + defaultExecutionTime + " ms Instead");
+      this.executionTime = defaultExecutionTime;
+    }
     startTime = System.currentTimeMillis();
     counts = new HashMap<String, Integer>();
     setupDatabase();
@@ -53,18 +58,17 @@ public class DirectoryTraversal {
   private void setupRunnable() {
     run = new Runnable() {
       public void run() {
-        try {
-          System.out.println("Thread " + Thread.currentThread().getId() + " Started and running");
-          while ((System.currentTimeMillis() - startTime) < executionTime) {
+        System.out.println("Thread " + Thread.currentThread().getId() + " Started and running");
+        while ((System.currentTimeMillis() - startTime) < executionTime) {
+          try {
             File file = null;
             synchronized(filesLock) {
-              if (files.size() == 0) {
-                break;
-              } else {
+              if (files.size() != 0) {
                 file = files.remove(0);
               }
             }
-            if (file.isDirectory()) {
+            if (file == null) {
+            } else if (file.isDirectory()) {
               String[] filenames = file.list();
               for (String filename : filenames) {
                 files.add(new File(file, filename));
@@ -85,13 +89,15 @@ public class DirectoryTraversal {
                 }
               }
             }
+          } catch (Exception e) {
+            System.out.println("Line 88: " + e.toString());
+          } finally {
           }
-        } catch (Exception e) {
-          System.out.println("Line 88: " + e.toString());
-        } finally {
-          exited++;
-          System.out.println("Thread " + Thread.currentThread().getId() + " Finished");
         }
+        synchronized(exitedLock) {
+          exited++;
+        }
+        System.out.println("Thread " + Thread.currentThread().getId() + " Finished");
       }
     };
   }
@@ -139,9 +145,9 @@ public class DirectoryTraversal {
    **/
   public void traverse() {
     for (int i = 0; i < numThreads; i++) {
-      threadpool[i] = new Thread(run);
-      System.out.println("Starting Thread " + threadpool[i].getId());
-      threadpool[i].start();
+      Thread t = new Thread(run);
+      System.out.println("Starting Thread " + t.getId());
+      t.start();
     }
     while (exited != numThreads) {
       try {
@@ -150,6 +156,7 @@ public class DirectoryTraversal {
         System.out.println(e);
       }
     }
+    System.out.println(files.size());
     printCounts();
     writeCounts();
   }
