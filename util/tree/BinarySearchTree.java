@@ -152,8 +152,8 @@ public class BinarySearchTree extends Tree {
   }
 
   /**
-   *  toString() returns a String represenation of this
-   *  BinarySearchTree.
+   *  toString() performs an iterative inorder traversal of this tree and
+   *  returns a String represenation of this BinarySearchTree.
    *
    *  @return a String representation of this BinarySearchTree.
    **/
