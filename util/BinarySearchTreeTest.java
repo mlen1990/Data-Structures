@@ -106,11 +106,40 @@ public class BinarySearchTreeTest {
     System.out.println("PASSED!");
   }
 
+  @Test
+  public static void test4() {
+    System.out.print("Test 4 - ");
+    BinarySearchTree tree = new BinarySearchTree();
+    assertTrue(tree.size() == 0);
+    assertTrue(tree.insert(new Integer(50)));
+    assertTrue(tree.size() == 1);
+    assertTrue(tree.insert(new Integer(30)));
+    assertTrue(tree.size() == 2);
+    assertTrue(tree.insert(new Integer(70)));
+    assertTrue(tree.size() == 3);
+    assertTrue(tree.insert(new Integer(0)));
+    assertTrue(tree.size() == 4);
+    assertTrue(tree.insert(new Integer(45)));
+    assertTrue(tree.size() == 5);
+    assertTrue("[50,30,0,45,70]".equals(tree.preOrder()));
+    assertTrue("[0,30,45,50,70]".equals(tree.inOrder()));
+    String preorder = tree.preOrder();
+    String inorder = tree.inOrder();
+    String pre = preorder.substring(1, preorder.length() - 1);
+    String in = inorder.substring(1, inorder.length() - 1);
+    BinarySearchTree tree1 = new BinarySearchTree(in.split(","), pre.split(","));
+    assertTrue(tree1.inOrder().equals(inorder));
+    assertTrue(tree1.preOrder().equals(preorder));
+    assertTrue(tree1.size() == 5);
+    System.out.println("PASSED!");
+  }
+
   public static void main(String[] args) {
     System.out.println("Begin BinarySearchTree Testing:");
     test1();
     test2();
     test3();
+    test4();
     System.out.println("All Tests Passed!!");
   }
 }

@@ -18,6 +18,7 @@ public class BinarySearchTree extends Tree {
    */
 
   protected BinarySearchTreeNode root;
+  private static int preIndex;
 
   /**
    *  BinarySearchTree() constructs an empty tree.
@@ -68,7 +69,7 @@ public class BinarySearchTree extends Tree {
       if (start == end) {
         return node;
       }
-      int i = find(inOrder, node); // find the index of the root in the inOrder array
+      int i = find(inOrder, preOrder[size - 1]); // find the index of the root in the inOrder array
       node.leftChild = buildTree(inOrder, preOrder, start, i - 1);
       node.rightChild = buildTree(inOrder, preOrder, i + 1, end);
       return node;
@@ -201,6 +202,39 @@ public class BinarySearchTree extends Tree {
   }
 
   /**
+   *  preOrder() iteratively perform a preorder traversal of this tree.
+   *
+   *  @return a string representing an preorder traversal of this tree.
+   *
+   *  Performance: O(n)
+   **/
+  public String preOrder() {
+    LinkedList<BinarySearchTreeNode> nodes = new LinkedList<BinarySearchTreeNode>();
+    BinarySearchTreeNode node = root;
+    StringWriter preorder = new StringWriter();
+    preorder.append('[');
+    while (!nodes.isEmpty() || node != null) {
+      if (node != null) {
+        try {
+          preorder.append(node.item().toString());
+        } catch (InvalidNodeException e) {
+          return null;
+        }
+        if (node.rightChild != null) {
+          nodes.add(node.rightChild);
+        }
+        node = node.leftChild;
+        if (!nodes.isEmpty() || node != null) {
+          preorder.append(',');
+        }
+      } else {
+        node = nodes.removeLast();
+      }
+    }
+    return preorder.append(']').toString();
+  }
+
+  /**
    *  toString() performs an iterative inorder traversal of this tree and
    *  returns a String represenation of this BinarySearchTree.
    *
@@ -226,4 +260,5 @@ public class BinarySearchTree extends Tree {
     }
     return inorder.append(']').toString();
   }
+
 }
