@@ -27,6 +27,10 @@ public class BinarySearchTree extends Tree {
     this.size = 0;
   }
 
+  /**
+   *  BinarySearchTree() constructs a binary search tree from its inorder
+   *  and preorder traversals.
+   */
   public BinarySearchTree(Object[] inOrder, Object[] preOrder) {
     root = buildTree(inOrder, preOrder, 0, inOrder.length - 1);
   }
@@ -50,7 +54,17 @@ public class BinarySearchTree extends Tree {
     return -1;
   }
 
-  public BinarySearchTreeNode buildTree(Object[] inOrder, Object[] preOrder, int start, int end) {
+  /**
+   *  buildTree() a helper method that recursively constructs a binary
+   *  search tree from its preorder and inorder traversals.
+   *
+   *  @param inOrder the inorder traversal of this tree.
+   *  @param preOrder the preorder traversal of this tree.
+   *  @param start the start index
+   *  @param end the end index, which must initially be the length of the
+   *  inorder array minus 1.
+   **/
+  private BinarySearchTreeNode buildTree(Object[] inOrder, Object[] preOrder, int start, int end) {
     if (start > end) {
       return null;
     }
