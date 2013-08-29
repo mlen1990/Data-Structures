@@ -18,7 +18,6 @@ public class BinarySearchTree extends Tree {
    */
 
   protected BinarySearchTreeNode root;
-  private static int preIndex;
 
   /**
    *  BinarySearchTree() constructs an empty tree.
