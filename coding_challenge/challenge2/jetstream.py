@@ -2,6 +2,8 @@
 
 import sys
 import util
+import datetime
+print datetime.datetime.now().strftime('%H:%M:%S')
 input_file = open(sys.argv[1], 'r')
 base = int(input_file.readline()) # Get the base weight
 line = input_file.readline()
@@ -16,6 +18,53 @@ while line:
   line = input_file.readline()
 input_file.close()
 print "Finished Parsing Input File"
-print "Begin Sorting Edges"
-edges.sort(key = lambda value: value[2])
-print "Finished Sorting Edges"
+
+print "Constructing Graph"
+graph = []
+for i in range(0, distance + 1):
+  graph.append(util.Vertex(i))
+for edge in edges:
+  graph[edge[0]].add_edge(util.Edge(graph[edge[0]], graph[edge[1]], edge[2], original=True))
+print "Finished Constructing Graph"
+
+print "Finding the Optimal Sequence of Jetstreams"
+solution = []
+frontier = util.PriorityQueue()
+start = graph[0] # Start at node 0
+successors = start.get_edges()
+if len(successors) == 0:
+  frontier.push([util.Edge(graph[0], graph[1], base)], base)
+else:
+  for successor in successors:
+    frontier.push([successor], successor.weight)
+while not frontier.isEmpty():
+  priority, l = frontier.pop()
+  node = l[-1]
+  if node.end == graph[distance]:
+    for item in l:
+      if item.original:
+        solution.append((item.start.name, item.end.name))
+    print solution
+    print priority
+    break
+  else:
+    successors = node.end.get_edges()
+    if not node.original:
+      l.pop()
+    if len(successors) == 0:
+      successor = util.Edge(graph[node.end.name], graph[node.end.name + 1], base)
+      new_priority = priority + successor.weight
+      l.append(successor)
+      frontier.push(l, new_priority)
+    elif len(successors) == 1:
+      successor = successors[0]
+      new_priority = priority + successor.weight
+      l.append(successor)
+      frontier.push(l, new_priority)
+    else:
+      for successor in successors:
+        copy = l[:]
+        new_priority = priority + successor.weight
+        copy.append(successor)
+        frontier.push(copy, new_priority)
+print datetime.datetime.now().strftime('%H:%M:%S')
